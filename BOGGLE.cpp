@@ -1,18 +1,20 @@
 // 2022_03_16 완전탐색 시간초과
 // 2022_03_22 DP로 시도
 // 이미 가본 곳을 false 하는 순간 다음에 가능할 수도 있는 것을 없애버림 
-// 다 찾을 때까지는 false하지 말고  8방향이 다 안 되었을 때 false하는 방법을 찾아야할듯
-
+// 다 찾을 때까지는 false하지 말고  8방향이 다 안 되었을 때 false하는 방법을 찾아야할듯 
+// 2022_03_23 캐시에 글자순서를 추가
+// -정답
 #include <iostream>
 #include <string>
+#include <cstring>
 
 using namespace std;
 
-int dx[8]{ 1,1,0,-1,-1,-1,-1,0 };
+int dx[8]{ 1,1,0,-1,-1,-1,0,1 };
 int dy[8]{ 0,1,1,1,0,-1,-1,-1 };
 
 //캐싱용
-int cache[5][5];
+int cache[5][5][10];
 
 char board[5][5];
 
@@ -40,7 +42,7 @@ bool hasWord(int x, int y, const string& word) {
 	return false;
 }
 
-bool hasWordDP(int x, int y, const string& word) {
+bool hasWordDP(int x, int y, const string& word, int idx) {
 	//기저사레1: 범위초과
 	if (!inRange(x, y))
 		return false;
@@ -54,7 +56,7 @@ bool hasWordDP(int x, int y, const string& word) {
 		return true;
 
 	//부분사례
-	int& ret = cache[y][x];
+	int& ret = cache[y][x][idx];
 	if (ret != -1)
 		return ret;
 
@@ -63,7 +65,7 @@ bool hasWordDP(int x, int y, const string& word) {
 	for (int i = 0; i < 8; ++i) {
 		int nextx = x + dx[i];
 		int nexty = y + dy[i];
-		if (hasWordDP(nextx, nexty, word.substr(1)))
+		if (hasWordDP(nextx, nexty, word.substr(1), idx + 1))
 			ret = true;
 	}
 	return ret;
@@ -83,16 +85,19 @@ int main() {
 			cin >> word;
 			cout << word;
 			bool canMake = false;
-			for (int i = 0; i < 5; ++i)
+			for (int i = 0; i < 5; ++i) {
 				for (int j = 0; j < 5; ++j) {
 					memset(cache, -1, sizeof(cache));
 					//if(hasWord(j,i,word))
-					if (hasWordDP(j, i, word))
+					if (hasWordDP(j, i, word, 0))
 					{
 						canMake = true;
 						break;
 					}
 				}
+				if (canMake)
+					break;
+			}
 			if (canMake)
 				cout << " YES\n";
 			else
