@@ -2,8 +2,6 @@
 //GENIUS 지니어스
 
 //노래중에 가장 긴 것이 4분이니까 슬라이딩 윈도우를 사용할 수 있다.
-//실수 1: 노래가 지속되는 모든 순간을 더해줘야함!
-//last를 더하는 방법을 + 5로 초반 마이너스를 없애주는 센스
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -20,6 +18,7 @@ void genius() {
 			double& prob = cache[time % 5][song];
 			prob = 0;
 			for (int last = 0; last < n; ++last)
+				//+ 5로 초반 마이너스를 없애주는 센스
 				prob += cache[(time - length[last] + 5) % 5][last] * possiblity[last][song];
 		}
 	}
@@ -38,6 +37,7 @@ int main() {
 				cin >> possiblity[i][j];
 		genius();
 
+		//실수 1: 노래가 지속되는 모든 순간을 더해줘야함!
 		double ret[51]{ 0 };
 		for (int song = 0; song < n; ++song) {
 			for (int start = k - length[song] + 1; start <= k; ++start) {
